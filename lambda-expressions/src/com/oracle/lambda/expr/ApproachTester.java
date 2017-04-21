@@ -11,24 +11,24 @@ public class ApproachTester {
 
         List<Person> roster = Person.createRoster();
         System.out.println(roster);
-        System.out.println();
+        System.out.println("******************************");
 
         //Approach # 1
         //Filtering logic coupled inside method
         Approach.printPersonsOlderThan(roster, 25);
-        System.out.println();
+        System.out.println("******************************");
 
         //Approach # 2
         //Filtering logic still coupled inside method,
         //but broadened via method parameters
         Approach.printPersonsWithinAgeRange(roster, 25, 30);
-        System.out.println();
+        System.out.println("******************************");
 
         //Approach # 3
         //Filtering logic delegated to a separate class and it's instance is passed
         CheckPerson criteria = new CheckPersonEligibleForSelectiveService();
         Approach.printPersons(roster, criteria);
-        System.out.println();
+        System.out.println("******************************");
 
         //Approach # 4
         //Filtering logic delegated to a separate class
@@ -40,7 +40,7 @@ public class ApproachTester {
                         person.getAge() <= 30;
             }
         });
-        System.out.println();
+        System.out.println("******************************");
 
         //Approach # 5
         //Since there is only one method the anonymous class uses in Approach # 4
@@ -50,7 +50,7 @@ public class ApproachTester {
                         p.gender == Person.Sex.FEMALE) &&
                         p.getAge() <= 30
                 );
-        System.out.println();
+        System.out.println("******************************");
 
         //Approach # 6
         //Standard Functional Interfaces with Lambda Expressions
@@ -59,6 +59,7 @@ public class ApproachTester {
                         person.gender == Person.Sex.FEMALE) &&
                         person.getAge() <= 30
                 );
+        System.out.println("******************************");
     }
 
 }
