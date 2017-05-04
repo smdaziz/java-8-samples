@@ -38,4 +38,12 @@ public class Transaction {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "id : " + id + ", " +
+                "value : " + value + ", " +
+                "type : " + type +
+                "}";
+    }
 }
