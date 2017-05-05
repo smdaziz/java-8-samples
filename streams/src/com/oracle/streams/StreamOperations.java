@@ -5,9 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -30,6 +28,10 @@ public class StreamOperations {
         instance.rangeDemo();
         instance.fileStreamsDemo();
         instance.limitInfiniteStreams();
+        instance.streamInterference();
+        instance.parallelStreamInterference();
+        instance.threadSafeInterference();
+        instance.threadSafeParallelInterference();
     }
 
     public void lazyOperationsDemo() {
@@ -164,6 +166,51 @@ public class StreamOperations {
         Stream<Integer> integerStream = Stream.iterate(10, n -> n + 10);
         integerStream.limit(10)
                     .forEach(System.out::println);
+        System.out.println();
+    }
+
+    public void streamInterference() {
+        System.out.println("streamInterference...");
+        List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3));
+//        List<Integer> list = Arrays.asList(1, 2, 3);
+        Stream<Integer> stream = list.stream();
+        list.add(4);
+        List<Integer> resultList = stream.collect(toList());
+        System.out.println("input : " + list);
+        System.out.println("output : " + resultList);
+        System.out.println();
+    }
+
+    public void parallelStreamInterference() {
+        System.out.println("parallelStreamInterference...");
+        List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3));
+        Stream<Integer> stream = list.parallelStream();
+        list.add(4);
+        List<Integer> resultList = stream.collect(toList());
+        System.out.println("input : " + list);
+        System.out.println("output : " + resultList);
+        System.out.println();
+    }
+
+    public void threadSafeInterference() {
+        System.out.println("threadSafeInterference...");
+        List<Integer> list = Collections.synchronizedList(new ArrayList<>(Arrays.asList(1, 2, 3)));
+        Stream<Integer> stream = list.stream();
+        list.add(4);
+        List<Integer> resultList = stream.collect(toList());
+        System.out.println("input : " + list);
+        System.out.println("output : " + resultList);
+        System.out.println();
+    }
+
+    public void threadSafeParallelInterference() {
+        System.out.println("threadSafeParallelInterference...");
+        List<Integer> list = Collections.synchronizedList(new ArrayList<>(Arrays.asList(1, 2, 3)));
+        Stream<Integer> stream = list.parallelStream();
+        list.add(4);
+        List<Integer> resultList = stream.collect(toList());
+        System.out.println("input : " + list);
+        System.out.println("output : " + resultList);
         System.out.println();
     }
 
