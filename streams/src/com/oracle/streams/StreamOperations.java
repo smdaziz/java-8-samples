@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -32,6 +33,13 @@ public class StreamOperations {
         instance.parallelStreamInterference();
         instance.threadSafeInterference();
         instance.threadSafeParallelInterference();
+        //running this would result in an exception, just to demo
+        //why we need to avoid state, when working with streams
+//        instance.statefulLambda();
+        instance.processStreamAndAdd();
+        instance.streamOrderingEffect();
+        instance.processParallelStreamAndAdd();
+        instance.processParallelStreamNoSideEffects();
     }
 
     public void lazyOperationsDemo() {
@@ -211,6 +219,88 @@ public class StreamOperations {
         List<Integer> resultList = stream.collect(toList());
         System.out.println("input : " + list);
         System.out.println("output : " + resultList);
+        System.out.println();
+    }
+
+    public void statefulLambda() {
+        System.out.println("statefulLambda...");
+        Set<Integer> seen = Collections.synchronizedSet(new HashSet<>());
+//        Set<Integer> seen = new HashSet<>();
+        seen.add(1);
+        seen.add(2);
+        seen.add(3);
+        seen.add(4);
+        System.out.println("input : " + seen);
+//        List<Integer> list = seen.stream()
+//                .parallel()
+//                .map(x -> {
+//                    if(seen.add(x*x))
+//                        return x*x;
+//                    else return x;
+//                })
+//                .collect(toList());
+        List<Integer> list = seen.stream()
+                .map(x -> {
+                    if(seen.add(x*x))
+                        return x*x;
+                    else return x;
+                })
+                .collect(toList());
+        System.out.println("output : " + list);
+        System.out.println();
+    }
+
+    public void processStreamAndAdd() {
+        System.out.println("processStreamAndAdd...");
+        List<Integer> input = Arrays.asList(1, 2, 3, 4, 5);
+        System.out.println("input : " + input);
+        List<Integer> output = new ArrayList<>();
+        input.stream()
+            .map(x -> x*x)
+            .forEach(x -> output.add(x));
+        System.out.println("output : " + output);
+        System.out.println();
+    }
+
+    public void streamOrderingEffect() {
+        System.out.println("streamOrderingEffect...");
+        System.out.print("Parallel Sample list : ");
+        IntStream.range(0, 5)
+                .parallel()
+                .map(x -> x*2)
+                .forEach(System.out::print);
+        System.out.println();
+        System.out.print("Sequential Sample list : ");
+        IntStream.range(0, 5)
+                .map(x -> x*2)
+                .forEach(System.out::print);
+        System.out.println();
+        System.out.println();
+    }
+
+    public void processParallelStreamAndAdd() {
+        System.out.println("processParallelStreamAndAdd...");
+        List<Integer> input = Arrays.asList(1, 2, 3, 4, 5);
+        System.out.println("input : " + input);
+        List<Integer> output = new ArrayList<>();
+        input.parallelStream()
+                .map(x -> x*x)
+                .forEach(e -> output.add(e));
+        //potential side-effects
+        System.out.println("output : " + output);
+        System.out.println();
+    }
+
+    public void processParallelStreamNoSideEffects() {
+        System.out.println("processParallelStreamNoSideEffects...");
+        List<Integer> input = Arrays.asList(1, 2, 3, 4, 5);
+        System.out.println("input : " + input);
+        List<Integer> output = input.parallelStream()
+                                    .map(x -> x*x)
+                                    .collect(toList());
+        //no side-effects
+        //because it is a safer reduction operation
+        System.out.println("output : " + output);
         System.out.println();
     }
 
